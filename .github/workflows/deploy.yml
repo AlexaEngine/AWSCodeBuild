@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main  
 
 jobs:
   deploy:
@@ -11,27 +11,27 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Compatible with Node.js 14
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v2  # Compatible with Node.js 14
         with:
-          node-version: '20'  # Ensure this is the correct Node.js version for your project
+          node-version: '14'  # Downgrade to Node.js version 14
 
       - name: Install dependencies
         run: npm install
 
       - name: Build project
         env:
-          CI: false  # Prevent CI from failing due to warnings; can be removed if not needed
+          CI: false  
         run: npm run build
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1  
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Change this to your AWS region
+          aws-region: us-east-1  
 
       - name: Deploy to S3
         run: |
