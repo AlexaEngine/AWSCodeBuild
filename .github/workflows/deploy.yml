@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main  
 
 jobs:
   deploy:
@@ -16,14 +16,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  # Ensure this is the correct Node.js version for your project
+          node-version: '20'  
 
       - name: Install dependencies
         run: npm install
 
       - name: Build project
         env:
-          CI: false  # Prevent CI from failing due to warnings; can be removed if not needed
+          CI: false 
         run: npm run build
 
       - name: Configure AWS credentials
@@ -31,13 +31,13 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Change this to your AWS region
+          aws-region: us-east-1 
 
       - name: Deploy to S3
         run: |
-          aws s3 sync build/ s3://mygithubalexa --delete  # Use --delete to remove files not present in the build folder from the S3 bucket
+          aws s3 sync build/ s3://mygithubalexa --delete  
 
       - name: Invalidate CloudFront Cache (optional)
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}  # Add this if you use CloudFront
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID && secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }} 
         run: |
           aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
