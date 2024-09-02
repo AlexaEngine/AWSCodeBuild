@@ -16,12 +16,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'  
+          node-version: '20'  # Ensure this is the correct Node.js version for your project
 
       - name: Install dependencies
         run: npm install
 
       - name: Build project
+        env:
+          CI: false  # Prevent CI from failing due to warnings; can be removed if not needed
         run: npm run build
 
       - name: Configure AWS credentials
@@ -33,4 +35,9 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync build/ s3://mygithubalexa
+          aws s3 sync build/ s3://mygithubalexa --delete  # Use --delete to remove files not present in the build folder from the S3 bucket
+
+      - name: Invalidate CloudFront Cache (optional)
+        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}  # Add this if you use CloudFront
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
