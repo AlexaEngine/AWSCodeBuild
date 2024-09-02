@@ -36,8 +36,3 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync build/ s3://mygithubalexa --delete  # Use --delete to remove files not present in the build folder from the S3 bucket
-
-      - name: Invalidate CloudFront Cache (optional)
-        if: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID != '' }}
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
